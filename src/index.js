@@ -2,29 +2,96 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+/*
 class Square extends React.Component {
+    /* constructor(props) {
+        super(props);
+        this.props = {
+            value: null
+        };
+    } 
     render() {
         return (
-            <button className="square">
+            <button className="square" onClick={() => this.props.onClick()}>
             
-                {/* TODO */}
+                {this.props.value}
             
             </button>
         )
     }
 }
+*/
 
+function Square(props) {
+    return (
+        <button className="square" onClick={props.onClick}>
+            {props.value}
+        </button>
+    )
+}
+
+function calculateWinner(squares) {
+    const lines = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+    ];
+
+    for (let i = 0; i < lines.length; i++) {
+        const [a, b, c] = lines[i];
+        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+            return squares[a];
+        }
+    }
+    return null;
+}
 
 class Board extends React.Component {
-    
-    renderSquare(i) {
-        return <Square />;
+    constructor(props) {
+        super(props);
+        this.state = {
+            squares: Array(9).fill(null),
+            xIsNext: true,
+        };
     }
 
-    render() {
-        const status = "Next player : X";
+    handleClick(i) {
+        const squares = this.state.squares.slice();
 
-        return (
+        if (calculateWinner(squares) || squares[i]) {
+            return;
+        }
+
+        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        this.setState({
+            squares: squares,
+            xIsNext: !this.state.xIsNext,
+        });
+    }
+    
+    renderSquare(i) {
+        return <Square value={this.state.squares[i]}
+                       onClick={() => this.handleClick(i)} />;
+    }
+
+
+    render() {
+        const winner = calculateWinner(this.state.squares);
+        let status;
+        if (winner) {
+            status = 'Winner: '+winner;
+        } else {
+            status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
+        }
+
+        
+
+         return (
             <div>
                 <div className="status">{status}</div>
                 <div className="board-row">
@@ -43,7 +110,7 @@ class Board extends React.Component {
                     {this.renderSquare(8)}
                 </div>
             </div>
-        )
+        ) 
     }
 }
 
@@ -58,14 +125,60 @@ class Game extends React.Component {
                 <div>{/* status */}</div>
                 <ol></ol>
             </div>
+            <div className="ShoppingList-class">
+                <ShoppingList />
+            </div>
             </div>
         );
     }
 }
 
+class ShoppingList extends React.Component {
+    
+    render() {
+        /*
+            <div className="Shopping-list">
+                <h1> Shopping List for {this.props.name} </h1>
+            
+            <ul>
+                <li>Instagram</li>
+                <li>WhatsApp</li>
+                <li>Oculus</li>
+            </ul>
+            </div>
+            */
+            
+            return React.createElement(
+                "div",
+                { className: "Shopping-list" },
+                React.createElement(
+                    "h1",
+                    null,
+                    "Shopping List for Nothing"
+                ),
+                React.createElement(
+                    "ul",
+                    null,
+                    React.createElement(
+                        "li",
+                        null,
+                        "Instagram"
+                    ),
+                    React.createElement(
+                        "li",
+                        null,
+                        "WhatsApp"
+                    ),
+                    React.createElement(
+                        "li",
+                        null,
+                        "Facebook"
+                    )
+                )
+            ) 
+        
+    }
+}
 
 ReactDOM.render
-(
-    <Game />,
-    document.getElementById('root')
-);
+(    <Game />, document.getElementById('root')  );
